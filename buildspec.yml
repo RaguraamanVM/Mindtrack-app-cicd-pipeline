@@ -8,10 +8,10 @@ phases:
 
   build:
     commands:
-      - echo Building image
+      - echo Building image...
       - docker build -t $DOCKER_USERNAME/mindtrack-app:v1 .
 
   post_build:
     commands:
-      - echo Pushing image
+      - echo Pushing image...
       - docker push $DOCKER_USERNAME/mindtrack-app:v1
