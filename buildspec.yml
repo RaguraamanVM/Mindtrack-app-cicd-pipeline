@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging into Docker Hub
+      - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+  build:
+    commands:
+      - echo Building image
+      - docker build -t $DOCKER_USERNAME/mindtrack-app:v1 .
+
+  post_build:
+    commands:
+      - echo Pushing image
+      - docker push $DOCKER_USERNAME/mindtrack-app:v1
