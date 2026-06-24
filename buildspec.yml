@@ -1,17 +1,33 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - echo Installing kubectl...
+      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+
   pre_build:
     commands:
       - echo Logging into Docker Hub
       - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
+      - echo Configuring EKS access
+      - aws eks update-kubeconfig --region ap-south-1 --name mindtrack-cluster
+
   build:
     commands:
-      - echo Building image...
+      - echo Building image
       - docker build -t $DOCKER_USERNAME/mindtrack-app:v1 .
 
   post_build:
     commands:
-      - echo Pushing image...
+      - echo Pushing image
       - docker push $DOCKER_USERNAME/mindtrack-app:v1
+
+      - echo Restarting deployment
+      - kubectl rollout restart deployment/mindtrack-app
+
+      - echo Waiting for rollout
+      - kubectl rollout status deployment/mindtrack-app
