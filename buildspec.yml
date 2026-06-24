@@ -16,6 +16,10 @@ phases:
       - echo Configuring EKS access
       - aws eks update-kubeconfig --region ap-south-1 --name mindtrack-cluster
 
+      - aws sts get-caller-identity
+      - kubectl config current-context
+      - kubectl get ns
+
   build:
     commands:
       - echo Building image
@@ -26,8 +30,5 @@ phases:
       - echo Pushing image
       - docker push $DOCKER_USERNAME/mindtrack-app:v1
 
-      - echo Restarting deployment
       - kubectl rollout restart deployment/mindtrack-app
-
-      - echo Waiting for rollout
       - kubectl rollout status deployment/mindtrack-app
